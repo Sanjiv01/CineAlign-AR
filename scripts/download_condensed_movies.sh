@@ -7,7 +7,7 @@
 #   bash scripts/download_condensed_movies.sh              # Full download
 #   bash scripts/download_condensed_movies.sh --metadata   # Metadata only
 #
-#$ -P cs523aw
+#$ -P cs585
 #$ -l h_rt=24:00:00
 #$ -N cm_download
 #$ -j y
@@ -21,10 +21,9 @@ PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 # Load modules
-module load python3/3.10.12
-module load ffmpeg/6.0
-
-source .venv/bin/activate
+module load miniconda
+module load academic-ml/spring-2026
+conda activate spring-2026-pyt
 
 DATA_DIR="$PROJECT_ROOT/data/condensed_movies"
 META_DIR="$PROJECT_ROOT/data/metadata"
