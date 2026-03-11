@@ -1,0 +1,47 @@
+# 1. Training Dataset <- 
+
+
+# 2. Actor-Centric Dataset
+table
+
+actos_dict = {}
+For each movie:
+    [s1, s2, s3, ...] = PySceneDetect(video)
+
+    top5 = table[movie]
+    for each s in [s1, s2, s3, ...]:
+        bbox = YOLO(s[0]) V
+        [s1, s2, s3, ...] = filter([s1, s2, s3, ...]) # drop person != 1, frames < 50 frames V
+        captions = []
+        
+        for s in [s1, s2, s3, ...]:
+            c = VLM(s[0], s[10], [-1])
+        
+        face_emb = face(bbox) V
+        
+        for each actor in top5:
+            actor = read_emb(actor_feature_folder, actor_name)
+            if sim(face_emb, actor_emb) > threshold: V
+                actos_dict['actor_name'].append(clips)
+
+for each actor_list in actos_dict: 
+    tom = [video10_clip5, video100_cilp10, ...]
+    num_s = random(1, 4)
+    shots = random picke $num_s videos from tom
+    
+            
+            
+# 3. Evaluation Code
+evaluate on their current model
+
+# 4. Model
+1. train their model on training dataset
+2. train our model on training dataset
+compare 1, 2
+
+3. Finetune their model on acto-centric dataset
+compare their model, 3
+
+
+
+        

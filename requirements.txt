@@ -1,0 +1,44 @@
+# Core ML
+torch==2.5.1+cu121
+torchvision==0.20.1+cu121
+torchaudio==2.5.1+cu121
+flash-attn==2.7.4.post1
+
+# Diffusion / Generation
+transformers==4.49.0
+diffusers==0.32.2
+accelerate==1.4.0
+peft>=0.15.0
+safetensors>=0.6.0
+
+# Video Processing
+decord==0.6.0
+imageio>=2.37.0
+imageio-ffmpeg>=0.6.0
+moviepy==1.0.3
+
+# EchoShot Dependencies
+easydict>=1.13
+einops>=0.8.1
+dashscope>=1.22.1
+
+# Dataset Pipeline - Detection & Face
+ultralytics>=8.0.0
+insightface>=0.7.0
+onnxruntime-gpu>=1.16.0
+scenedetect[opencv]>=0.6.0
+
+# Dataset Pipeline - Utils
+scikit-learn>=1.5.0
+scipy>=1.15.0
+opencv-python>=4.8.0
+fire>=0.7.0
+gdown
+
+# General
+numpy>=1.26.0
+pandas>=2.3.0
+pillow>=11.0.0
+tqdm>=4.67.0
+pyyaml>=6.0.0
+huggingface-hub>=0.36.0
