@@ -1,27 +1,26 @@
-#!/bin/bash
+#!/bin/bash -l
 #
 # Download Condensed Movies dataset from YouTube.
 # Run on SCC login node (network access required) or as a batch job.
 #
 # Usage:
-#   bash scripts/download_condensed_movies.sh              # Full download
-#   bash scripts/download_condensed_movies.sh --metadata   # Metadata only
+#   qsub scripts/download_condensed_movies.sh
+#   qsub scripts/download_condensed_movies.sh --metadata
 #
 #$ -P cs585
-#$ -l h_rt=24:00:00
 #$ -N cm_download
-#$ -j y
-#$ -o cm_download.out
-#
-#$ -pe omp 4
+#$ -l h_rt=24:00:00
 #$ -l mem_per_core=4G
+#$ -pe omp 4
+#$ -cwd
+#$ -j y
+#$ -o /projectnb/cs585/students/sanjiv/CineAlign-AR/scripts/cm_download.out
 
 set -e
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-# Load modules
 module load miniconda
 module load academic-ml/spring-2026
 conda activate spring-2026-pyt
@@ -29,10 +28,16 @@ conda activate spring-2026-pyt
 DATA_DIR="$PROJECT_ROOT/data/condensed_movies"
 META_DIR="$PROJECT_ROOT/data/metadata"
 
+mkdir -p "$DATA_DIR" "$META_DIR"
+
 echo "============================================================"
 echo "Condensed Movies Download"
-echo "  Data dir:     $DATA_DIR"
-echo "  Metadata dir: $META_DIR"
+echo "Host:         $(hostname)"
+echo "Project root: $PROJECT_ROOT"
+echo "Data dir:     $DATA_DIR"
+echo "Metadata dir: $META_DIR"
+echo "Python:       $(which python)"
+echo "Conda env:    $CONDA_DEFAULT_ENV"
 echo "============================================================"
 
 if [ "$1" = "--metadata" ]; then
@@ -54,6 +59,5 @@ echo "============================================================"
 echo "[DONE] Download complete."
 echo "============================================================"
 
-# Count downloaded videos
 VIDEO_COUNT=$(find "$DATA_DIR/videos" -name "*.mp4" 2>/dev/null | wc -l)
 echo "Total .mp4 files: $VIDEO_COUNT"
