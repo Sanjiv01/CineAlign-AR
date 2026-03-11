@@ -25,7 +25,7 @@
 #$ -l gpu_c=8.0
 #$ -l mem_per_core=8G
 
-PROJECT_ROOT="/projectnb/cs523aw/students/$USER/Identity-centric-Autoregressive-Multi-Shot-Video-Generation"
+PROJECT_ROOT="/projectnb/cs523aw/students/$USER/CineAlign-AR"
 cd "$PROJECT_ROOT"
 
 module load python3/3.10.12

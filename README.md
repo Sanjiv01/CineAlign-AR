@@ -61,8 +61,8 @@ dataset** that spans multiple movies per identity.
 
 ```bash
 # Clone the repo
-git clone https://github.com/<your-org>/Identity-centric-Autoregressive-Multi-Shot-Video-Generation.git
-cd Identity-centric-Autoregressive-Multi-Shot-Video-Generation
+git clone https://github.com/Sanjiv01/CineAlign-AR.git
+cd CineAlign-AR
 
 # Run the setup script (loads modules, creates venv, installs deps)
 bash setup_env.sh
