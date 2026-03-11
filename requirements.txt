@@ -34,6 +34,7 @@ scipy>=1.15.0
 opencv-python>=4.8.0
 fire>=0.7.0
 gdown
+yt-dlp>=2024.0.0
 
 # General
 numpy>=1.26.0

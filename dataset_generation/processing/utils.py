@@ -20,8 +20,14 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 # CONFIG
 # ============================================================
 
-INPUT_DIR = "dataset_in"
-OUT_ROOT = "dataset_out"        # root for all output
+# Paths are relative to the working directory (dataset_generation/processing/)
+# or can be overridden via environment variables
+_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+INPUT_DIR = os.environ.get("DATASET_INPUT_DIR",
+                           os.path.join(_PROJECT_ROOT, "dataset_in"))
+OUT_ROOT = os.environ.get("DATASET_OUTPUT_DIR",
+                          os.path.join(_PROJECT_ROOT, "dataset_out"))
 CLIP_DIR = os.path.join(OUT_ROOT, "clips")
 TRAIN_JSON_PATH = os.path.join(OUT_ROOT, "train.json")
 
@@ -31,7 +37,9 @@ TARGET_H = 480
 SCENE_THRESHOLD = 27            # PySceneDetect sensitivity
 MIN_SCENE_FRAMES = 20           # ignore very short scenes
 
-YOLO_MODEL = "yolov8m.pt"       # COCO model (class 0 = person)
+# Look for YOLO weights in project models/ first, then fall back to cwd
+_YOLO_PROJECT = os.path.join(_PROJECT_ROOT, "models", "yolov8m.pt")
+YOLO_MODEL = _YOLO_PROJECT if os.path.isfile(_YOLO_PROJECT) else "yolov8m.pt"
 YOLO_CONF = 0.40
 PERSON_CLASS = 0
 
