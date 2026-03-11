@@ -1,11 +1,6 @@
 #!/bin/bash -l
 #
 # Download Condensed Movies dataset from YouTube.
-# Run on SCC login node (network access required) or as a batch job.
-#
-# Usage:
-#   qsub scripts/download_condensed_movies.sh
-#   qsub scripts/download_condensed_movies.sh --metadata
 #
 #$ -P cs585
 #$ -N cm_download
@@ -18,7 +13,7 @@
 
 set -e
 
-PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PROJECT_ROOT="/projectnb/cs585/students/sanjiv/CineAlign-AR"
 cd "$PROJECT_ROOT"
 
 module load miniconda
@@ -32,12 +27,12 @@ mkdir -p "$DATA_DIR" "$META_DIR"
 
 echo "============================================================"
 echo "Condensed Movies Download"
-echo "Host:         $(hostname)"
-echo "Project root: $PROJECT_ROOT"
-echo "Data dir:     $DATA_DIR"
-echo "Metadata dir: $META_DIR"
-echo "Python:       $(which python)"
-echo "Conda env:    $CONDA_DEFAULT_ENV"
+echo "Project root:  $PROJECT_ROOT"
+echo "Data dir:      $DATA_DIR"
+echo "Metadata dir:  $META_DIR"
+echo "Host:          $(hostname)"
+echo "Python:        $(which python)"
+echo "Conda env:     $CONDA_DEFAULT_ENV"
 echo "============================================================"
 
 if [ "$1" = "--metadata" ]; then
