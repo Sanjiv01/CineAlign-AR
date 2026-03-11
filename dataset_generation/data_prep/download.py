@@ -26,7 +26,8 @@ from os.path import join as osj
 
 import pandas as pd
 
-HOSTING_ADDRESS = 'https://thor.robots.ox.ac.uk/~vgg/data/condensed-movies/data'
+# Metadata lives on GitHub, NOT on the Oxford hosting server
+GITHUB_RAW = 'https://raw.githubusercontent.com/m-bain/CondensedMovies/master/data/metadata'
 
 # Default paths (relative to this file's location)
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -35,44 +36,47 @@ DEFAULT_METADATA_DIR = os.path.join(SCRIPT_DIR, '..', '..', 'data', 'metadata')
 
 
 def download_metadata(metadata_dir):
-    """Download Condensed Movies metadata CSVs from Oxford VGG."""
+    """Download Condensed Movies metadata CSVs from the GitHub repo."""
     os.makedirs(metadata_dir, exist_ok=True)
 
-    base_url = HOSTING_ADDRESS
-    files = [
-        'clips.csv',
-        'durations.csv',
-        'captions.csv',
-    ]
+    files = ['clips.csv', 'durations.csv']
 
     for f in files:
         out_path = osj(metadata_dir, f)
-        if os.path.exists(out_path):
-            print(f"[OK] {f} already exists.")
+        if os.path.exists(out_path) and os.path.getsize(out_path) > 100:
+            print(f"[OK] {f} already exists ({os.path.getsize(out_path)} bytes).")
             continue
 
-        url = f"{base_url}/{f}"
+        url = f"{GITHUB_RAW}/{f}"
         print(f"[INFO] Downloading {url} -> {out_path}")
         cmd = f'wget -q "{url}" -O "{out_path}" || curl -sL "{url}" -o "{out_path}"'
-        os.system(cmd)
+        ret = os.system(cmd)
 
-    # Also try to get YouTube ID lists if they exist
+        # Verify download succeeded
+        if not os.path.exists(out_path) or os.path.getsize(out_path) < 100:
+            print(f"[ERROR] Failed to download {f}. Try manually:")
+            print(f"  wget '{url}' -O '{out_path}'")
+        else:
+            print(f"[OK] {f}: {os.path.getsize(out_path)} bytes")
+
+    # Download YouTube ID dump CSVs (one per upload year)
     yt_dump_dir = osj(metadata_dir, 'youtube-dl-dump')
-    if not os.path.isdir(yt_dump_dir):
-        print(f"[INFO] Downloading YouTube ID dumps...")
-        yt_dump_url = f"{base_url}/youtube-dl-dump.zip"
-        zip_path = osj(metadata_dir, 'youtube-dl-dump.zip')
-        cmd = f'wget -q "{yt_dump_url}" -O "{zip_path}" || curl -sL "{yt_dump_url}" -o "{zip_path}"'
-        os.system(cmd)
-        if os.path.exists(zip_path):
-            import zipfile
-            try:
-                with zipfile.ZipFile(zip_path, 'r') as z:
-                    z.extractall(metadata_dir)
-                print(f"[OK] Extracted YouTube ID dumps to {yt_dump_dir}")
-            except Exception as e:
-                print(f"[WARN] Failed to extract: {e}")
-            os.remove(zip_path)
+    if not os.path.isdir(yt_dump_dir) or len(os.listdir(yt_dump_dir)) == 0:
+        print(f"[INFO] Generating YouTube ID lists from clips.csv...")
+        clips_csv = osj(metadata_dir, 'clips.csv')
+        if os.path.exists(clips_csv):
+            os.makedirs(yt_dump_dir, exist_ok=True)
+            clips_df = pd.read_csv(clips_csv)
+            # Group unique video IDs by upload_year
+            for year, group in clips_df.groupby('upload_year'):
+                year_file = osj(yt_dump_dir, f"{int(year)}.csv")
+                unique_ids = group['videoid'].unique()
+                with open(year_file, 'w') as fh:
+                    for vid_id in unique_ids:
+                        fh.write(f"{vid_id}\n")
+                print(f"  [OK] {year_file}: {len(unique_ids)} video IDs")
+        else:
+            print(f"[ERROR] clips.csv not found at {clips_csv}. Cannot generate ID lists.")
 
 
 def youtube_download(data_dir, metadata_dir, batch_mode=False):
@@ -85,27 +89,10 @@ def youtube_download(data_dir, metadata_dir, batch_mode=False):
     video_dir = osj(data_dir, 'videos')
     os.makedirs(video_dir, exist_ok=True)
 
-    if not os.path.isdir(id_dir):
-        # Fall back: generate ID list from clips.csv
-        clips_csv = osj(metadata_dir, 'clips.csv')
-        if os.path.exists(clips_csv):
-            print("[INFO] No youtube-dl-dump found. Extracting IDs from clips.csv...")
-            os.makedirs(id_dir, exist_ok=True)
-            clips_df = pd.read_csv(clips_csv)
-
-            # Group by upload_year and write one CSV per year
-            for year, group in clips_df.groupby('upload_year'):
-                year_file = osj(id_dir, f"{int(year)}.csv")
-                unique_ids = group['videoid'].unique()
-                with open(year_file, 'w') as f:
-                    for vid_id in unique_ids:
-                        f.write(f"https://www.youtube.com/watch?v={vid_id}\n")
-                print(f"  [OK] {year_file}: {len(unique_ids)} video IDs")
-        else:
-            print(f"[ERROR] No ID source found. Need either:")
-            print(f"  - {id_dir} (YouTube ID dump directory)")
-            print(f"  - {clips_csv} (clips metadata CSV)")
-            return
+    if not os.path.isdir(id_dir) or len(os.listdir(id_dir)) == 0:
+        print(f"[ERROR] No YouTube ID lists found at {id_dir}")
+        print(f"  Run with --metadata_only first to generate them from clips.csv")
+        return
 
     # Download videos year by year
     for file in sorted(os.listdir(id_dir)):
