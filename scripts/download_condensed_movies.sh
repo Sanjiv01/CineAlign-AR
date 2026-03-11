@@ -4,14 +4,14 @@
 #
 #$ -P cs585
 #$ -N cm_download
-#$ -l h_rt=24:00:00
+#$ -l h_rt=48:00:00
 #$ -l mem_per_core=4G
 #$ -pe omp 4
 #$ -cwd
 #$ -j y
-#$ -o /projectnb/cs585/students/sanjiv/CineAlign-AR/scripts/cm_download.out
+#$ -o logs/cm_download_$JOB_ID.log
 
-set -e
+# NOTE: not using set -e because yt-dlp returns non-zero for unavailable videos
 
 PROJECT_ROOT="/projectnb/cs585/students/sanjiv/CineAlign-AR"
 cd "$PROJECT_ROOT"
@@ -19,6 +19,9 @@ cd "$PROJECT_ROOT"
 module load miniconda
 module load academic-ml/spring-2026
 conda activate spring-2026-pyt
+
+# yt-dlp installs to ~/.local/bin via pip --user
+export PATH="$HOME/.local/bin:$PATH"
 
 DATA_DIR="$PROJECT_ROOT/data/condensed_movies"
 META_DIR="$PROJECT_ROOT/data/metadata"

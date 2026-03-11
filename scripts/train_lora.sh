@@ -13,7 +13,7 @@
 #   qsub -v RESUME_CKPT=runs/step_5000.pt scripts/train_lora.sh
 # ============================================================
 
-#$ -P cs523aw
+#$ -P cs585
 #$ -l h_rt=96:00:00
 #$ -N cinealign_lora_train
 #$ -j y
@@ -24,13 +24,12 @@
 #$ -l gpu_type=H200
 #$ -l mem_per_core=16G
 
-PROJECT_ROOT="/projectnb/cs523aw/students/$USER/CineAlign-AR"
+PROJECT_ROOT="/projectnb/cs585/students/sanjiv/CineAlign-AR"
 cd "$PROJECT_ROOT"
 
-module load python3/3.10.12
-module load cuda/12.2
-
-source .venv/bin/activate
+module load miniconda
+module load academic-ml/spring-2026
+conda activate spring-2026-pyt
 
 echo "============================================================"
 echo "CineAlign-AR LoRA Training"

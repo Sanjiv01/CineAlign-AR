@@ -22,6 +22,8 @@ import json
 import os
 import argparse
 import shutil
+import platform
+import urllib.request
 from os.path import join as osj
 
 import pandas as pd
@@ -49,8 +51,14 @@ def download_metadata(metadata_dir):
 
         url = f"{GITHUB_RAW}/{f}"
         print(f"[INFO] Downloading {url} -> {out_path}")
-        cmd = f'wget -q "{url}" -O "{out_path}" || curl -sL "{url}" -o "{out_path}"'
-        ret = os.system(cmd)
+
+        # Use urllib (works on all platforms) with wget/curl fallback
+        try:
+            urllib.request.urlretrieve(url, out_path)
+        except Exception as e:
+            print(f"[WARN] urllib failed ({e}), trying wget/curl...")
+            cmd = f'wget -q "{url}" -O "{out_path}" || curl -sL "{url}" -o "{out_path}"'
+            os.system(cmd)
 
         # Verify download succeeded
         if not os.path.exists(out_path) or os.path.getsize(out_path) < 100:

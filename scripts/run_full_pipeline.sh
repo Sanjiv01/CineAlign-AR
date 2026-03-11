@@ -57,9 +57,11 @@ echo "  Max videos:    $MAX_VIDEOS"
 echo "============================================================"
 echo ""
 
-# Activate environment
-if [ -f ".venv/bin/activate" ]; then
-    source .venv/bin/activate
+# Activate environment (SCC conda)
+if command -v module &>/dev/null; then
+    module load miniconda 2>/dev/null || true
+    module load academic-ml/spring-2026 2>/dev/null || true
+    conda activate spring-2026-pyt 2>/dev/null || true
 fi
 
 # ============================================================
