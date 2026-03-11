@@ -11,7 +11,7 @@
 #$ -l h_rt=24:00:00
 #$ -N cm_download
 #$ -j y
-#$ -o scripts/cm_download.out
+#$ -o cm_download.out
 #
 #$ -pe omp 4
 #$ -l mem_per_core=4G
