@@ -120,6 +120,12 @@ def youtube_download(data_dir, metadata_dir, batch_mode=False):
             '--merge-output-format mp4 '
             '--ignore-errors '
             '--no-overwrites '
+            '--retries 3 '
+            '--sleep-interval 3 '
+            '--max-sleep-interval 8 '
+            '--sleep-requests 1.5 '
+            '--limit-rate 5M '
+            '--extractor-retries 3 '
             f'-o "{output_fmt}" '
             f'-a "{id_fp}"'
         )
