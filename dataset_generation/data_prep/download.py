@@ -87,7 +87,7 @@ def download_metadata(metadata_dir):
             print(f"[ERROR] clips.csv not found at {clips_csv}. Cannot generate ID lists.")
 
 
-def youtube_download(data_dir, metadata_dir, batch_mode=False):
+def youtube_download(data_dir, metadata_dir, batch_mode=False, cookies_file=None):
     """
     Download source videos using yt-dlp.
     Reads YouTube ID lists from metadata_dir/youtube-dl-dump/.
@@ -114,6 +114,7 @@ def youtube_download(data_dir, metadata_dir, batch_mode=False):
         output_fmt = osj(video_dir_year, '%(id)s.%(ext)s')
         id_fp = osj(id_dir, file)
 
+        cookies_arg = f'--cookies "{cookies_file}" ' if cookies_file else ''
         cmd = (
             'yt-dlp '
             '-f "bestvideo[height<=480]+bestaudio/best[height<=480]" '
@@ -122,7 +123,7 @@ def youtube_download(data_dir, metadata_dir, batch_mode=False):
             '--no-overwrites '
             '--retries 5 '
             '--concurrent-fragments 4 '
-            '--cookies-from-browser chrome '
+            f'{cookies_arg}'
             '--extractor-retries 5 '
             f'-o "{output_fmt}" '
             f'-a "{id_fp}"'
@@ -242,6 +243,8 @@ def main():
                         help="Only download metadata CSVs, skip video download")
     parser.add_argument("--skip_download", action="store_true",
                         help="Skip video download, only trim and check")
+    parser.add_argument("--cookies", default=None,
+                        help="Path to cookies.txt file for yt-dlp (avoids rate limits)")
     args = parser.parse_args()
 
     data_dir = os.path.abspath(args.data_dir)
@@ -260,7 +263,7 @@ def main():
         return
 
     if not args.skip_download:
-        youtube_download(data_dir, metadata_dir, batch_mode=args.batch)
+        youtube_download(data_dir, metadata_dir, batch_mode=args.batch, cookies_file=args.cookies)
     else:
         # Just trim and check
         durations_csv = osj(metadata_dir, 'durations.csv')
