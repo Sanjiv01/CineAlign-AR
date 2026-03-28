@@ -132,7 +132,7 @@ check("numpy", lambda: __import__("numpy").__version__)
 check("pandas", lambda: __import__("pandas").__version__)
 check("PIL/Pillow", lambda: __import__("PIL").__version__)
 check("tqdm", lambda: __import__("tqdm").__version__)
-check("easydict", lambda: __import__("easydict").__version__)
+check("easydict", lambda: __import__("importlib.metadata").metadata.version("easydict"))
 check("einops", lambda: __import__("einops").__version__)
 check_warn("huggingface_hub", lambda: __import__("huggingface_hub").__version__)
 
